@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class KMLComponentInterface(ABC):
+class KMLComponent(ABC):
 	@abstractmethod
 	def setup(self, flight):
 		pass
@@ -14,7 +14,7 @@ class KMLComponentInterface(ABC):
 		pass
 
 
-class TrajectoryKMLComponent(KMLComponentInterface):
+class TrajectoryKMLComponent(KMLComponent):
 	def setup(self, flight):
 		return ""
 	

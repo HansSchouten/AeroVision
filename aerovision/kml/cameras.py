@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class KMLCameraInterface(ABC):
+class KMLCamera(ABC):
 	@abstractmethod
 	def setup(self, flight):
 		pass
@@ -8,18 +8,51 @@ class KMLCameraInterface(ABC):
 	@abstractmethod
 	def step(self, dataPoint):
 		pass
-	
-	@abstractmethod
-	def finish(self, flight):
-		pass
 
 
-class TopViewKMLCamera(KMLCameraInterface):
+class TopViewKMLCamera(KMLCamera):
+	def __init__(self):
+		self.firstStep = True
+
 	def setup(self, flight):
-		return ""
+		self.firstDataPoint = flight.dataPoint(0)
+		return '''
+<LookAt>
+	<latitude>''' + str(self.firstDataPoint.lat) + '''</latitude>
+	<longitude>''' + str(self.firstDataPoint.lon) + '''</longitude>
+	<altitude>''' + str(self.firstDataPoint.geoaltitude + 500) + '''</altitude>
+	<altitudeMode>absolute</altitudeMode>
+	<heading>0</heading>
+	<tilt>0</tilt>
+</LookAt>
+		'''
 	
 	def step(self, dataPoint):
-		return ""
-	
-	def finish(self, flight):
-		return ""
+		if self.firstStep:
+			self.firstStep = False
+			return '''
+<gx:FlyTo>
+    <gx:duration>1.0</gx:duration>
+    <LookAt>
+		<latitude>''' + str(self.firstDataPoint.lat) + '''</latitude>
+		<longitude>''' + str(self.firstDataPoint.lon) + '''</longitude>
+		<altitude>''' + str(self.firstDataPoint.geoaltitude + 500) + '''</altitude>
+        <altitudeMode>absolute</altitudeMode>
+        <heading>0</heading>
+        <tilt>0</tilt>
+    </LookAt>
+</gx:FlyTo>
+			'''
+		else:
+			return '''
+<gx:FlyTo>
+    <LookAt>
+		<latitude>''' + str(self.firstDataPoint.lat) + '''</latitude>
+		<longitude>''' + str(self.firstDataPoint.lon) + '''</longitude>
+		<altitude>''' + str(self.firstDataPoint.geoaltitude + 500) + '''</altitude>
+        <altitudeMode>absolute</altitudeMode>
+        <heading>0</heading>
+        <tilt>0</tilt>
+    </LookAt>
+</gx:FlyTo>
+			'''
