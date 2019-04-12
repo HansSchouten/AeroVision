@@ -51,7 +51,7 @@ class MultiFlightKMLAnimator(KMLAnimator):
 	def writeAnimation(self, file):
 		flights = self.data
 		
-		file.write('<gx:Tour><name>Flight animation</name><gx:Playlist>\n');
+		file.write('<gx:Tour><name>Flights Animation</name><gx:Playlist>\n');
 		
 		# loop through all flights
 		for id in flights:
@@ -88,7 +88,7 @@ class SingleFlightKMLAnimator(KMLAnimator):
 	def writeAnimation(self, file):
 		flight = self.data
 		
-		file.write('<gx:Tour><name>Flight animation</name><gx:Playlist>\n');
+		file.write('<gx:Tour><name>Flight Animation</name><gx:Playlist>\n');
 		
 		# loop through all flight datapoints
 		for index in range(0, flight.data.shape[0]):

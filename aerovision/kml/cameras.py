@@ -11,20 +11,22 @@ class KMLCamera(ABC):
 
 class TopViewKMLCamera(KMLCamera):
 	def __init__(self):
-		self.lat = 52.185870
-		self.lon = 4.473441
-		self.geoaltitude = 8000
+		self.lat = '52.216'
+		self.lon = '4.516'
+		self.geoaltitude = '1500'
+		self.heading = '-137'
+		self.tilt = '80'
 		self.firstStep = True
 
 	def setup(self, data):
 		return '''
 <LookAt>
-	<latitude>''' + str(self.lat) + '''</latitude>
-	<longitude>''' + str(self.lon) + '''</longitude>
-	<altitude>''' + str(self.geoaltitude) + '''</altitude>
+	<latitude>''' + self.lat + '''</latitude>
+	<longitude>''' + self.lon + '''</longitude>
+	<altitude>''' + self.geoaltitude + '''</altitude>
 	<altitudeMode>absolute</altitudeMode>
-	<heading>0</heading>
-	<tilt>0</tilt>
+	<heading>''' + self.heading + '''</heading>
+	<tilt>''' + self.tilt + '''</tilt>
 </LookAt>
 		'''
 	
@@ -34,12 +36,12 @@ class TopViewKMLCamera(KMLCamera):
 			return '''
 <gx:FlyTo>
     <LookAt>
-		<latitude>''' + str(self.lat) + '''</latitude>
-		<longitude>''' + str(self.lon) + '''</longitude>
-		<altitude>''' + str(self.geoaltitude) + '''</altitude>
-        <altitudeMode>absolute</altitudeMode>
-        <heading>0</heading>
-        <tilt>0</tilt>
+		<latitude>''' + self.lat + '''</latitude>
+		<longitude>''' + self.lon + '''</longitude>
+		<altitude>''' + self.geoaltitude + '''</altitude>
+		<altitudeMode>absolute</altitudeMode>
+		<heading>''' + self.heading + '''</heading>
+		<tilt>''' + self.tilt + '''</tilt>
     </LookAt>
 </gx:FlyTo>
 			'''
@@ -48,12 +50,12 @@ class TopViewKMLCamera(KMLCamera):
 <gx:FlyTo>
     <gx:duration>1.0</gx:duration>
     <LookAt>
-		<latitude>''' + str(self.lat) + '''</latitude>
-		<longitude>''' + str(self.lon) + '''</longitude>
-		<altitude>''' + str(self.geoaltitude) + '''</altitude>
-        <altitudeMode>absolute</altitudeMode>
-        <heading>0</heading>
-        <tilt>0</tilt>
+		<latitude>''' + self.lat + '''</latitude>
+		<longitude>''' + self.lon + '''</longitude>
+		<altitude>''' + self.geoaltitude + '''</altitude>
+		<altitudeMode>absolute</altitudeMode>
+		<heading>''' + self.heading + '''</heading>
+		<tilt>''' + self.tilt + '''</tilt>
     </LookAt>
 </gx:FlyTo>
 			'''

@@ -8,7 +8,7 @@ def main(argv):
 	flights = parser.getFlights("data/flights.csv")
 	
 	animator = MultiFlightKMLAnimator(flights)
-	animator.generateKML("output/animation.kml")
+	animator.generateKML("output/flights.kml")
 
 if __name__ == "__main__":
 	main(sys.argv)

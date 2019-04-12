@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+import matplotlib.pyplot as plt
+
+from aerovision.colors import Gradient
 
 class KMLComponent(ABC):
 	@abstractmethod
@@ -13,30 +16,36 @@ class KMLComponent(ABC):
 	def finish(self, flight):
 		pass
 
+
 class MultiTrajectoryLine3DKMLComponent(KMLComponent):
 	def setup(self, flights):
+		gradient = Gradient([500, 2000], ['#FF0000', '#FFFF00', '#00FF00'])
+
 		setup = '''
 <Folder> 
     <open>0</open>
-    <name>Groundpaths</name>
-    <Style id='multi_trajectory_line_3D_style'>
-		<LineStyle>
-			<color>60F0B414</color>
-			<width>2</width>
-		</LineStyle>
-		<PolyStyle>
-			<color>60F0B414</color>
-			<colorMode>normal</colorMode>
-		</PolyStyle>
-    </Style>
+    <name>3D Trajectories</name>
 		'''
 
 		for id in flights:
 			flight = flights[id]
+
+			opacity = '80'
+			hue = gradient.getColor(flight.medianAltitude())
+			color = opacity + hue
 			setup += '''
-<Placemark id='multi_trajectory_line_3D_placemark'>
-    <name>Plotground</name>
-    <styleUrl>#multi_trajectory_line_3D_style</styleUrl>
+<Placemark id="multi_trajectory_line_3D_placemark">
+    <name>Flight ''' + id + ''' - ICAO24 ''' + flight.icao24 + '''</name>
+    <Style>
+		<LineStyle>
+			<color>''' + color + '''</color>
+			<width>3</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>''' + color + '''</color>
+			<colorMode>normal</colorMode>
+		</PolyStyle>
+    </Style>
     <LineString id="multi_trajectory_line_3D_''' + id + '''">
         <extrude>0</extrude>
         <tesselate>0</tesselate>
