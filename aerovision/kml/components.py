@@ -5,15 +5,15 @@ from aerovision.colors import Gradient
 
 class KMLComponent(ABC):
 	@abstractmethod
-	def setup(self, flight):
+	def setup(self, data):
 		pass
 	
 	@abstractmethod
-	def step(self, dataPoint):
+	def step(self, data):
 		pass
 	
 	@abstractmethod
-	def finish(self, flight):
+	def finish(self, data):
 		pass
 
 
@@ -63,9 +63,8 @@ class MultiTrajectoryLine3DKMLComponent(KMLComponent):
 	
 	def step(self, flight):
 		coordinates = ''
-		for index in range(0, flight.data.shape[0]):
-			dataPoint = flight.dataPoints(index)
-			coordinates += str(dataPoint.lon) + "," + str(dataPoint.lat) + "," + str(dataPoint.geoaltitude) + '\n'
+		for t in range(flight.data.shape[0]):
+			coordinates += str(flight.getLon(t)) + "," + str(flight.getLat(t)) + "," + str(flight.getAlt(t)) + '\n'
 
 		return '''
 <LineString targetId="multi_trajectory_line_3D_''' + flight.id + '''">
@@ -75,15 +74,14 @@ class MultiTrajectoryLine3DKMLComponent(KMLComponent):
 </LineString>
 		'''
 	
-	def finish(self, flight):
+	def finish(self, flights):
 		return ""
 
 
 class TrajectoryLine3DKMLComponent(KMLComponent):
-	def __init__(self):
-		self.coordinates = ""
-
 	def setup(self, flight):
+		self.flight = flight
+		self.coordinates = ""
 		return '''
 <Style id='trajectory_line_3D_style'>
     <LineStyle>
@@ -108,8 +106,8 @@ class TrajectoryLine3DKMLComponent(KMLComponent):
 </Placemark>
 		'''
 	
-	def step(self, dataPoint):
-		self.coordinates += str(dataPoint.lon) + "," + str(dataPoint.lat) + "," + str(dataPoint.geoaltitude) + '\n'
+	def step(self, t):
+		self.coordinates += str(self.flight.getLon(t)) + "," + str(self.flight.getLat(t)) + "," + str(self.flight.getAlt(t)) + '\n'
 		return '''
 <LineString targetId='trajectory_line_3D'>
 	<coordinates>
@@ -123,10 +121,9 @@ class TrajectoryLine3DKMLComponent(KMLComponent):
 
 
 class FilledTrajectoryKMLComponent(KMLComponent):
-	def __init__(self):
-		self.coordinates = ""
-
 	def setup(self, flight):
+		self.flight = flight
+		self.coordinates = ""
 		return '''
 <Style id='filled_trajectory_style'>
     <LineStyle>
@@ -152,8 +149,8 @@ class FilledTrajectoryKMLComponent(KMLComponent):
 </Placemark>
 		'''
 	
-	def step(self, dataPoint):
-		self.coordinates += str(dataPoint.lon) + "," + str(dataPoint.lat) + "," + str(dataPoint.geoaltitude) + '\n'
+	def step(self, t):
+		self.coordinates += str(self.flight.getLon(t)) + "," + str(self.flight.getLat(t)) + "," + str(self.flight.getAlt(t)) + '\n'
 		return '''
 <LineString targetId='filled_trajectory'>
 	<coordinates>

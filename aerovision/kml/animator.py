@@ -91,11 +91,10 @@ class SingleFlightKMLAnimator(KMLAnimator):
 		file.write('<gx:Tour><name>Flight Animation</name><gx:Playlist>\n');
 		
 		# loop through all flight datapoints
-		for index in range(0, flight.data.shape[0]):
-			dataPoint = flight.dataPoints(index)
+		for t in range(flight.data.shape[0]):
 
 			# animate camera to current datapoint
-			file.write(self.camera.step(dataPoint))
+			file.write(self.camera.step(t))
 			
 			file.write('''
 <gx:AnimatedUpdate>
@@ -106,7 +105,7 @@ class SingleFlightKMLAnimator(KMLAnimator):
 			
 			# animate each component based on current datapoint
 			for component in self.components:
-				file.write(component.step(dataPoint))
+				file.write(component.step(t))
 			
 			file.write('''
 		</Change>

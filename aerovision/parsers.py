@@ -17,7 +17,10 @@ class FlightParser:
 		# create a dictionary with a Flight object for each flight in flightsDF
 		flights = dict()
 		for flightId in flightIds:
-			trajectory = flightsDF[:][flightsDF['flightId'] == flightId]
+			trajectory = flightsDF[:][flightsDF['flightId'] == flightId]	
+			# only use flights with enough data for spline interpolation
+			if trajectory.shape[0] < 10:
+				continue
 			flights[str(flightId)] = Flight(trajectory)
 		# return dictionary containing all flights
 		return flights
