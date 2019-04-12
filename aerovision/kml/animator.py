@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from aerovision.kml.cameras import TopViewKMLCamera
-from aerovision.kml.components import TrajectoryKMLComponent
+from aerovision.kml.components import *
 
 class KMLAnimator(ABC):
 	def __init__(self, data):
@@ -43,10 +43,47 @@ class KMLAnimator(ABC):
 		pass
 
 
+class MultiFlightKMLAnimator(KMLAnimator):
+	def configure(self):
+		self.camera = TopViewKMLCamera()
+		self.components = [MultiTrajectoryLine3DKMLComponent()]
+		
+	def writeAnimation(self, file):
+		flights = self.data
+		
+		file.write('<gx:Tour><name>Flight animation</name><gx:Playlist>\n');
+		
+		# loop through all flights
+		for id in flights:
+			flight = flights[id]
+
+			# animate camera to current flight
+			file.write(self.camera.step(flight))
+			
+			file.write('''
+<gx:AnimatedUpdate>
+	<gx:duration>0</gx:duration>
+	<Update>
+		<Change>
+			''')
+			
+			# animate each component based on current flight
+			for component in self.components:
+				file.write(component.step(flight))
+			
+			file.write('''
+		</Change>
+	</Update>
+</gx:AnimatedUpdate>
+			''')
+		
+		file.write('</gx:Playlist></gx:Tour>\n');
+
+
 class SingleFlightKMLAnimator(KMLAnimator):
 	def configure(self):
 		self.camera = TopViewKMLCamera()
-		self.components = [TrajectoryKMLComponent()]
+		self.components = [FilledTrajectoryKMLComponent()]
 		
 	def writeAnimation(self, file):
 		flight = self.data
@@ -54,7 +91,9 @@ class SingleFlightKMLAnimator(KMLAnimator):
 		file.write('<gx:Tour><name>Flight animation</name><gx:Playlist>\n');
 		
 		# loop through all flight datapoints
-		for dataPoint in flight.data.iterrows():
+		for index in range(0, flight.data.shape[0]):
+			dataPoint = flight.dataPoints(index)
+
 			# animate camera to current datapoint
 			file.write(self.camera.step(dataPoint))
 			

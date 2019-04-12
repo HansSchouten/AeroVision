@@ -1,14 +1,13 @@
 import sys
 
 from aerovision.parsers import FlightParser
-from aerovision.kml.animator import SingleFlightKMLAnimator
+from aerovision.kml.animator import MultiFlightKMLAnimator
 
 def main(argv):
 	parser = FlightParser()
 	flights = parser.getFlights("data/flights.csv")
-	flight = flights['4844c6']
 	
-	animator = SingleFlightKMLAnimator(flight)
+	animator = MultiFlightKMLAnimator(flights)
 	animator.generateKML("output/animation.kml")
 
 if __name__ == "__main__":

@@ -2,41 +2,41 @@ from abc import ABC, abstractmethod
 
 class KMLCamera(ABC):
 	@abstractmethod
-	def setup(self, flight):
+	def setup(self, data):
 		pass
 	
 	@abstractmethod
-	def step(self, dataPoint):
+	def step(self, data):
 		pass
-
 
 class TopViewKMLCamera(KMLCamera):
 	def __init__(self):
+		self.lat = 52.185870
+		self.lon = 4.473441
+		self.geoaltitude = 8000
 		self.firstStep = True
 
-	def setup(self, flight):
-		self.firstDataPoint = flight.dataPoint(0)
+	def setup(self, data):
 		return '''
 <LookAt>
-	<latitude>''' + str(self.firstDataPoint.lat) + '''</latitude>
-	<longitude>''' + str(self.firstDataPoint.lon) + '''</longitude>
-	<altitude>''' + str(self.firstDataPoint.geoaltitude + 500) + '''</altitude>
+	<latitude>''' + str(self.lat) + '''</latitude>
+	<longitude>''' + str(self.lon) + '''</longitude>
+	<altitude>''' + str(self.geoaltitude) + '''</altitude>
 	<altitudeMode>absolute</altitudeMode>
 	<heading>0</heading>
 	<tilt>0</tilt>
 </LookAt>
 		'''
 	
-	def step(self, dataPoint):
+	def step(self, data):
 		if self.firstStep:
 			self.firstStep = False
 			return '''
 <gx:FlyTo>
-    <gx:duration>1.0</gx:duration>
     <LookAt>
-		<latitude>''' + str(self.firstDataPoint.lat) + '''</latitude>
-		<longitude>''' + str(self.firstDataPoint.lon) + '''</longitude>
-		<altitude>''' + str(self.firstDataPoint.geoaltitude + 500) + '''</altitude>
+		<latitude>''' + str(self.lat) + '''</latitude>
+		<longitude>''' + str(self.lon) + '''</longitude>
+		<altitude>''' + str(self.geoaltitude) + '''</altitude>
         <altitudeMode>absolute</altitudeMode>
         <heading>0</heading>
         <tilt>0</tilt>
@@ -46,10 +46,11 @@ class TopViewKMLCamera(KMLCamera):
 		else:
 			return '''
 <gx:FlyTo>
+    <gx:duration>1.0</gx:duration>
     <LookAt>
-		<latitude>''' + str(self.firstDataPoint.lat) + '''</latitude>
-		<longitude>''' + str(self.firstDataPoint.lon) + '''</longitude>
-		<altitude>''' + str(self.firstDataPoint.geoaltitude + 500) + '''</altitude>
+		<latitude>''' + str(self.lat) + '''</latitude>
+		<longitude>''' + str(self.lon) + '''</longitude>
+		<altitude>''' + str(self.geoaltitude) + '''</altitude>
         <altitudeMode>absolute</altitudeMode>
         <heading>0</heading>
         <tilt>0</tilt>
