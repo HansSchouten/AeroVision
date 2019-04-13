@@ -12,7 +12,7 @@ def main(argv):
 	parser = FlightParser()
 	flights = parser.getFlights("data/flights.csv")
 	
-	generator = FlightsKMLAnimation(flights)
+	generator = FlightsKMLTimespan(flights)
 	generator.generateKML("output/flights.kml")
 
 

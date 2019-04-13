@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aerovision.interpolation import Spline
 
 class Flight:
@@ -59,3 +61,21 @@ class Flight:
 
 		"""
 		return self.data.loc[:,"geoaltitude"].median()
+
+	def startTime(self):
+		"""
+		Return the timestamp of the first position in this flight.
+
+		"""
+		firstTimestampString = self.data.iloc[0].time_utc
+		firstTimestamp = datetime.strptime(firstTimestampString, '%Y-%m-%d %H:%M:%S')
+		return firstTimestamp
+
+	def endTime(self):
+		"""
+		Return the timestamp of the last position in this flight.
+
+		"""
+		lastTimestampString = self.data.iloc[self.duration - 1].time_utc
+		lastTimestamp = datetime.strptime(lastTimestampString, '%Y-%m-%d %H:%M:%S')
+		return lastTimestamp

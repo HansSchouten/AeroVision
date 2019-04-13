@@ -24,18 +24,14 @@ class KMLAnimationGenerator(KMLGenerator):
 
 		"""
 		# camera setup
-		file.write(self.camera.setup(self.data))
+		file.write(self.camera.setup())
 		
 		# write the pre-animation configuration of each component
 		for component in self.components:
-			file.write(component.setup(self.data))
+			file.write(component.setup())
 		
 		# write animation
 		self.writeAnimation(file)
-		
-		# write the post-animation configuration of each component
-		for component in self.components:
-			file.write(component.finish(self.data))
 		
 	@abstractmethod
 	def writeAnimation(self, file):
@@ -57,9 +53,9 @@ class FlightsKMLAnimation(KMLAnimationGenerator):
 		Configure the multi-flight animation.
 
 		"""
-		self.camera = FixedKMLCamera()
+		self.camera = FixedKMLCamera({}, {})
 		self.components = [
-			MultiTrajectoryLine3DKMLComponent()
+			TrajectoryLine3DKMLComponent(self.data, {})
 		]
 		
 	def writeAnimation(self, file):
@@ -72,11 +68,11 @@ class FlightsKMLAnimation(KMLAnimationGenerator):
 		file.write('<gx:Tour><name>Flights Animation</name><gx:Playlist>\n')
 		
 		# loop through all flights
-		for id in flights:
-			flight = flights[id]
+		for flightId in flights:
+			flight = flights[flightId]
 
 			# animate camera to current flight
-			file.write(self.camera.step(flight))
+			file.write(self.camera.timeStep(flight))
 			
 			file.write('''
 <gx:AnimatedUpdate>
@@ -87,7 +83,7 @@ class FlightsKMLAnimation(KMLAnimationGenerator):
 			
 			# animate each component based on current flight
 			for component in self.components:
-				file.write(component.step(flight))
+				file.write(component.timeStep(flight, flight.duration))
 			
 			file.write('''
 		</Change>
@@ -109,8 +105,12 @@ class FlightKMLAnimation(KMLAnimationGenerator):
 		Configure the single-flight animation.
 
 		"""
-		self.camera = FixedKMLCamera()
-		self.components = [FilledTrajectoryKMLComponent()]
+		self.camera = FixedKMLCamera({}, {})
+		flight = self.data
+		self.components = [
+			TrajectoryLine3DKMLComponent({flight.id: flight}, {}),
+			FilledFlightpathKMLComponent({flight.id: flight}, {})
+		]
 		
 	def writeAnimation(self, file):
 		"""
@@ -125,7 +125,7 @@ class FlightKMLAnimation(KMLAnimationGenerator):
 		for t in range(flight.data.shape[0]):
 
 			# animate camera to current datapoint
-			file.write(self.camera.step(t))
+			file.write(self.camera.timeStep(t))
 			
 			file.write('''
 <gx:AnimatedUpdate>
@@ -136,7 +136,7 @@ class FlightKMLAnimation(KMLAnimationGenerator):
 			
 			# animate each component based on current datapoint
 			for component in self.components:
-				file.write(component.step(t))
+				file.write(component.timeStep(flight, t))
 			
 			file.write('''
 		</Change>

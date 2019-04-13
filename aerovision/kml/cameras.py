@@ -6,8 +6,12 @@ class KMLCamera(ABC):
 
 	"""
 
+	def __init__(self, data, config):
+		self.data = data
+		self.config = config
+
 	@abstractmethod
-	def setup(self, data):
+	def setup(self):
 		"""
 		Return the KML Camera structure defining the initial camera viewpoint.
 
@@ -15,7 +19,7 @@ class KMLCamera(ABC):
 		return ""
 	
 	@abstractmethod
-	def step(self, data):
+	def timeStep(self, timeData):
 		"""
 		Return the KML Camera structure added for each (animation, timespan, ..) step.
 
@@ -28,7 +32,11 @@ class FixedKMLCamera(KMLCamera):
 
 	"""
 
-	def __init__(self):
+	def setup(self):
+		"""
+		Return the KML structure defining the initial camera viewpoint.
+
+		"""
 		self.lat = '52.216'
 		self.lon = '4.516'
 		self.geoaltitude = '1500'
@@ -36,11 +44,6 @@ class FixedKMLCamera(KMLCamera):
 		self.tilt = '80'
 		self.firstStep = True
 
-	def setup(self, data):
-		"""
-		Return the KML structure defining the initial camera viewpoint.
-
-		"""
 		return '''
 <LookAt>
 	<latitude>''' + self.lat + '''</latitude>
@@ -52,9 +55,9 @@ class FixedKMLCamera(KMLCamera):
 </LookAt>
 		'''
 	
-	def step(self, data):
+	def timeStep(self, timeData):
 		"""
-		Return the KML structure defining a fixed camera viewpoint for each step.
+		Return the KML structure defining a fixed camera viewpoint.
 
 		"""
 		if self.firstStep:
