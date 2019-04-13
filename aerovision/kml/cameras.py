@@ -1,15 +1,33 @@
 from abc import ABC, abstractmethod
 
 class KMLCamera(ABC):
+	"""
+	This abstract class defines the structure of a KML Camera.
+
+	"""
+
 	@abstractmethod
 	def setup(self, data):
-		pass
+		"""
+		Return the KML Camera structure defining the initial camera viewpoint.
+
+		"""
+		return ""
 	
 	@abstractmethod
 	def step(self, data):
-		pass
+		"""
+		Return the KML Camera structure added for each (animation, timespan, ..) step.
 
-class TopViewKMLCamera(KMLCamera):
+		"""
+		return ""
+
+class FixedKMLCamera(KMLCamera):
+	"""
+	This KML Camera class defines a camera at a fixed viewpoint.
+
+	"""
+
 	def __init__(self):
 		self.lat = '52.216'
 		self.lon = '4.516'
@@ -19,6 +37,10 @@ class TopViewKMLCamera(KMLCamera):
 		self.firstStep = True
 
 	def setup(self, data):
+		"""
+		Return the KML structure defining the initial camera viewpoint.
+
+		"""
 		return '''
 <LookAt>
 	<latitude>''' + self.lat + '''</latitude>
@@ -31,6 +53,10 @@ class TopViewKMLCamera(KMLCamera):
 		'''
 	
 	def step(self, data):
+		"""
+		Return the KML structure defining a fixed camera viewpoint for each step.
+
+		"""
 		if self.firstStep:
 			self.firstStep = False
 			return '''

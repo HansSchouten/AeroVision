@@ -1,25 +1,28 @@
 from abc import ABC, abstractmethod
 
-from aerovision.kml.cameras import TopViewKMLCamera
+from aerovision.kml.generator import KMLGenerator
+from aerovision.kml.cameras import *
 from aerovision.kml.components import *
 
-class KMLAnimator(ABC):
-	def __init__(self, data):
-		self.data = data
-		self.configure()
-		
+class KMLAnimationGenerator(KMLGenerator):
+	"""
+	This abstract class defines the structure of a KML Animation Generator.
+
+	"""
+
 	@abstractmethod
 	def configure(self):
+		"""
+		Configure the KML Animation Generator.
+
+		"""
 		pass
 
-	def generateKML(self, outFile):		
-		file = open(outFile, "w")
-		file.write('<kml xmlns="http://www.opengis.net/kml/2.2" '
-			'xmlns:atom="http://www.w3.org/2005/Atom" '
-			'xmlns:gx="http://www.google.com/kml/ext/2.2" '
-			'xmlns:kml="http://www.opengis.net/kml/2.2">\n')
-		file.write('<Document>\n')
-		
+	def writeDocumentBody(self, file):
+		"""
+		Write the body of the KML document.
+
+		"""
 		# camera setup
 		file.write(self.camera.setup(self.data))
 		
@@ -34,24 +37,39 @@ class KMLAnimator(ABC):
 		for component in self.components:
 			file.write(component.finish(self.data))
 		
-		file.write('</Document>\n')
-		file.write('</kml>')
-		file.close()
-		
 	@abstractmethod
 	def writeAnimation(self, file):
+		"""
+		Write the animation.
+
+		"""
 		pass
+	
 
+class FlightsKMLAnimation(KMLAnimationGenerator):
+	"""
+	This class can create multi-flight KML animations.
 
-class MultiFlightKMLAnimator(KMLAnimator):
+	"""
+
 	def configure(self):
-		self.camera = TopViewKMLCamera()
-		self.components = [MultiTrajectoryLine3DKMLComponent()]
+		"""
+		Configure the multi-flight animation.
+
+		"""
+		self.camera = FixedKMLCamera()
+		self.components = [
+			MultiTrajectoryLine3DKMLComponent()
+		]
 		
 	def writeAnimation(self, file):
+		"""
+		Write the multi-flight animation.
+
+		"""
 		flights = self.data
 		
-		file.write('<gx:Tour><name>Flights Animation</name><gx:Playlist>\n');
+		file.write('<gx:Tour><name>Flights Animation</name><gx:Playlist>\n')
 		
 		# loop through all flights
 		for id in flights:
@@ -77,18 +95,31 @@ class MultiFlightKMLAnimator(KMLAnimator):
 </gx:AnimatedUpdate>
 			''')
 		
-		file.write('</gx:Playlist></gx:Tour>\n');
+		file.write('</gx:Playlist></gx:Tour>\n')
 
 
-class SingleFlightKMLAnimator(KMLAnimator):
+class FlightKMLAnimation(KMLAnimationGenerator):
+	"""
+	This class can create single-flight KML animations.
+
+	"""
+
 	def configure(self):
-		self.camera = TopViewKMLCamera()
+		"""
+		Configure the single-flight animation.
+
+		"""
+		self.camera = FixedKMLCamera()
 		self.components = [FilledTrajectoryKMLComponent()]
 		
 	def writeAnimation(self, file):
+		"""
+		Write the single-flight animation.
+
+		"""
 		flight = self.data
 		
-		file.write('<gx:Tour><name>Flight Animation</name><gx:Playlist>\n');
+		file.write('<gx:Tour><name>Flight Animation</name><gx:Playlist>\n')
 		
 		# loop through all flight datapoints
 		for t in range(flight.data.shape[0]):
@@ -113,4 +144,4 @@ class SingleFlightKMLAnimator(KMLAnimator):
 </gx:AnimatedUpdate>
 			''')
 		
-		file.write('</gx:Playlist></gx:Tour>\n');
+		file.write('</gx:Playlist></gx:Tour>\n')
